@@ -14,7 +14,7 @@
                 <include name="**" />
             </fileset>
             <filterchain>
-                <replacetokens begintoken="{{" endtoken="}}">
+                <replacetokens begintoken="{{{" endtoken="}}}">
                     <token key="domain" value="${domain}" />
                     <token key="db.password" value="${db.password}" />
                     <token key="email.password" value="${email.password}" />
