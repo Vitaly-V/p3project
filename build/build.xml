@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<project name="Example phing deploy" default="build" basedir="." description="This is an example buildfile for app.">
+
+    <property name="domain" value="" />
+    <property name="fullPath" value="" />
+    <property name="db.password" value="" />
+    <property name="email.password" value="" />
+
+    <target name="copyProject">
+        <echo msg="Copying project files..." />
+        <copy todir="${fullPath}"  overwrite="true">
+            <fileset dir="${project.basedir}">
+                <include name="**" />
+            </fileset>
+            <filterchain>
+                <replacetokens begintoken="{{" endtoken="}}">
+                    <token key="domain" value="${domain}" />
+                    <token key="db.password" value="${db.password}" />
+                    <token key="email.password" value="${email.password}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
+    </target>
+
+    <target name="composerInstall">
+        <echo msg="Running composer install..." />
+        <exec dir="${fullPath}" command="composer install" checkreturn="true" passthru="true"/>
+    </target>
+
+    <target name="makeMigrations">
+        <echo msg="Copying migrations..." />
+        <echo msg="Applying migrations..." />
+        <exec dir="${fullPath}" command="php artisan migrate" checkreturn="true" passthru="true"/>
+    </target>
+
+    <target name="applyCronCommands">
+        <exec dir="${fullPath}" command="crontab ${fullPath}/build/production/crontab" passthru="true" />
+    </target>
+
+    <target name="build" depends="copyProject, composerInstall, makeMigrations, applyCronCommands">
+    </target>
+</project>
